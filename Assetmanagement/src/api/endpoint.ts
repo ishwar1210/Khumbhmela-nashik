@@ -392,4 +392,13 @@ export const getAssetTaggingList = async () => {
   }
 };
 
+export const addAssetAllocation = async (allocationData: any) => {
+  try {
+    const response = await axiosInstance.post('/AssetAllocation/AddAssetAllocation', allocationData);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 // Add other API endpoints here as needed
