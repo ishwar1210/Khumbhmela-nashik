@@ -401,4 +401,22 @@ export const addAssetAllocation = async (allocationData: any) => {
   }
 };
 
+export const getAssetAllocationList = async () => {
+  try {
+    const response = await axiosInstance.get('/AssetAllocation/AssetAllocationList');
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getAssetDistributionList = async () => {
+  try {
+    const response = await axiosInstance.get('/AssetDistribution/List');
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 // Add other API endpoints here as needed

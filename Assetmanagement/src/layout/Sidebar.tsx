@@ -246,7 +246,7 @@ function Sidebar({ onNavigate, currentPage }: SidebarProps) {
             </div>
             <ul className={`submenu ${openDropdown === 'report' ? 'open' : ''}`}>
               <li className="submenu-item">
-                <a href="" className="submenu-link" onClick={closeMobileSidebar}>Asset Summary</a>
+                <a href="#" className="submenu-link" onClick={(e) => { e.preventDefault(); handleNavigate('allocationreport'); }}>Allocation Report</a>
               </li>
             </ul>
           </li>
