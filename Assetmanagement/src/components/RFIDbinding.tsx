@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './RFIDbinding.css';
-import { getGRNList, bindRFID, getAssetList, getAssetTaggingList } from '../api/endpoint';
+import { getGRNList, bindRFID, getAssetList, getAssetTaggingList, uploadAssetExcel } from '../api/endpoint';
+import * as XLSX from 'xlsx';
 
 interface GRN {
   grnId: number;
@@ -57,6 +58,8 @@ function RFIDbinding() {
   const [currentBindingIndex, setCurrentBindingIndex] = useState(0);
   const [assetMapping, setAssetMapping] = useState<Map<string, number>>(new Map());
   const [boundAssetsList, setBoundAssetsList] = useState<any[]>([]);
+  const [uploadLoading, setUploadLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Function to encrypt serial number for QR code
   const encryptSerialNo = (serialNo: string): string => {
@@ -316,12 +319,6 @@ function RFIDbinding() {
   };
 
 
-  const handleImportRFID = () => {
-    // Implement bulk RFID import functionality
-    alert('Import RFID functionality - Connect to RFID reader for bulk import');
-  };
-
-
   const handleConfirmBinding = async () => {
     setLoading(true);
     setError('');
@@ -423,6 +420,75 @@ function RFIDbinding() {
         return 'Completed';
       default:
         return 'Pending';
+    }
+  };
+
+  const handleImportRFID = () => {
+    // Trigger file input click
+    fileInputRef.current?.click();
+  };
+
+  const downloadExcelTemplate = () => {
+    // Create worksheet with headers
+    const headers = ['AssetName', 'SerialNo', 'RFIDNo', 'QRCode'];
+    const worksheet = XLSX.utils.aoa_to_sheet([headers]);
+    
+    // Set column widths
+    worksheet['!cols'] = [
+      { wch: 20 }, // AssetName
+      { wch: 20 }, // SerialNo
+      { wch: 20 }, // RFIDNo
+      { wch: 20 }  // QRCode
+    ];
+    
+    // Create workbook and add worksheet
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'RFID Import');
+    
+    // Generate Excel file and trigger download
+    XLSX.writeFile(workbook, 'RFID_Import_Template.xlsx');
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const validTypes = [
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    ];
+    if (!validTypes.includes(file.type) && !file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
+      setError('Please upload a valid Excel file (.xlsx or .xls)');
+      event.target.value = '';
+      return;
+    }
+
+    try {
+      setUploadLoading(true);
+      setError('');
+      setSuccessMessage('');
+
+      const response = await uploadAssetExcel(file);
+      console.log('Upload Response:', response);
+
+      setSuccessMessage('Excel file uploaded successfully!');
+      
+      // Refresh the data
+      setTimeout(() => {
+        fetchGRNs();
+        if (selectedAsset) {
+          fetchBoundAssets(selectedAsset.assetName, totalQty);
+        }
+        setSuccessMessage('');
+      }, 2000);
+
+    } catch (err: any) {
+      console.error('Upload error:', err);
+      setError(err.response?.data?.message || 'Failed to upload Excel file');
+    } finally {
+      setUploadLoading(false);
+      event.target.value = ''; // Reset file input
     }
   };
 
@@ -565,12 +631,30 @@ function RFIDbinding() {
           <div className="binding-actions">
             <button
               type="button"
-              className="btn-import"
-              onClick={handleImportRFID}
-              disabled={loading}
+              className="btn-import btn-template"
+              onClick={downloadExcelTemplate}
+              disabled={uploadLoading}
+              style={{ marginLeft: '10px' }}
             >
-              Import RFID
+              <span style={{ fontWeight: 500 }}>Download Template</span>
             </button>
+            
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileUpload}
+              accept=".xlsx,.xls"
+              style={{ display: 'none' }}
+            />
+            <button
+              type="button"
+              className="btn-import btn-template"
+              onClick={handleImportRFID}
+              disabled={uploadLoading}
+            >
+              {uploadLoading ? 'Uploading...' : 'Import RFID'}
+            </button>
+
             
             <button
               type="button"

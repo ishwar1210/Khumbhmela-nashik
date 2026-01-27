@@ -1,3 +1,24 @@
+.btn-template {
+  background-color: #FF7043;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 18px;
+  font-size: 15px;
+  font-weight: 500;
+  margin-left: 10px;
+  box-shadow: 0 2px 6px rgba(255, 112, 67, 0.08);
+  transition: background 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+.btn-template:hover:not(:disabled) {
+  background-color: #ff5722;
+  box-shadow: 0 4px 12px rgba(255, 112, 67, 0.18);
+}
+.btn-template:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
 .rfid-binding-container {
   padding: 20px;
   max-width: 1400px;

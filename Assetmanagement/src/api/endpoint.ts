@@ -392,6 +392,21 @@ export const getAssetTaggingList = async () => {
   }
 };
 
+export const uploadAssetExcel = async (file: File) => {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await axiosInstance.post('/RFIDBinding/UploadAssetExcel', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const addAssetAllocation = async (allocationData: any) => {
   try {
     const response = await axiosInstance.post('/AssetAllocation/AddAssetAllocation', allocationData);
