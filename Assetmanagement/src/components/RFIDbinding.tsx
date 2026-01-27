@@ -518,9 +518,7 @@ function RFIDbinding() {
                 <tr>
                   <th>Sr No</th>
                   <th>System Serial No</th>
-                  <th>Vendor Serial No</th>
                   <th>RFID Tag</th>
-                  <th>QR Code</th>
                   <th>Status</th>
                 </tr>
               </thead>
@@ -542,45 +540,19 @@ function RFIDbinding() {
                     <td>
                       <input
                         type="text"
-                        value={binding.serialNo.replace('SYS-', 'VND-')}
-                        className="table-input"
-                        placeholder="Vendor Serial"
-                        disabled
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="text"
                         value={binding.rfidNo}
                         onChange={(e) =>
                           handleBindingChange(index, 'rfidNo', e.target.value)
                         }
                         className="table-input"
                         placeholder="Scan RFID"
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        value={binding.qrCode}
-                        className="table-input"
-                        placeholder="Auto Generated"
-                        disabled
-                        title={`Encrypted QR Code\nDecrypted: ${decryptQrCode(binding.qrCode)}`}
-                        style={{ backgroundColor: '#f5f5f5', cursor: 'help' }}
+                        maxLength={24}
                       />
                     </td>
                     <td>
                       <span className={`status-badge ${getStatusClass(binding.status)}`}>
                         {getStatusText(binding.status)}
                       </span>
-                    </td>
-                    <td>
-                      {remainingQty > 0 && (
-                        <span style={{ color: '#666', fontSize: '12px' }}>
-                          {boundQty + 1} of {totalQty}
-                        </span>
-                      )}
                     </td>
                   </tr>
                 ))}
@@ -623,7 +595,6 @@ function RFIDbinding() {
                     <th>Asset Name</th>
                     <th>System Serial No</th>
                     <th>RFID Tag</th>
-                    <th>QR Code</th>
                     <th>Status</th>
                     <th>Asset Status</th>
                   </tr>
@@ -635,14 +606,6 @@ function RFIDbinding() {
                       <td>{item.assetName}</td>
                       <td>{item.serialNo}</td>
                       <td>{item.rfidNo || 'N/A'}</td>
-                      <td>
-                        <span 
-                          title={`Encrypted: ${item.qrCode}\nDecrypted: ${decryptQrCode(item.qrCode)}`}
-                          style={{ cursor: 'help' }}
-                        >
-                          {item.qrCode ? `${item.qrCode.substring(0, 20)}...` : 'N/A'}
-                        </span>
-                      </td>
                       <td>
                         <span className="status-badge status-completed">
                           {getStatusText(item.status)}

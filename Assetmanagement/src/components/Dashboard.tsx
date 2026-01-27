@@ -9,7 +9,8 @@ import {
   getGRNList, 
   getAssetAllocationList, 
   getAssetDistributionList,
-  getAssetList 
+  getAssetList,
+  getAssetTaggingList 
 } from '../api/endpoint';
 
 function Dashboard() {
@@ -99,16 +100,37 @@ function Dashboard() {
         setAllocableCount(allocationResponse.data.length);
       }
       
+      // Fetch RFID Asset Tagging data for serial numbers
+      const rfidResponse = await getAssetTaggingList();
+      console.log('RFID Tagging Response:', rfidResponse);
+      let rfidArray = [];
+      if (Array.isArray(rfidResponse)) {
+        rfidArray = rfidResponse;
+      } else if (rfidResponse?.data && Array.isArray(rfidResponse.data)) {
+        rfidArray = rfidResponse.data;
+      }
+      
+      // Create a map of assetTaggingId to serial number
+      const serialMap = new Map();
+      rfidArray.forEach((item: any) => {
+        serialMap.set(item.assetTaggingId, {
+          serialNo: item.serialNo || 'N/A',
+          rfidNo: item.rfidNo || 'N/A'
+        });
+      });
+      
       // Set recent allocations (last 7)
       if (allocationArray.length > 0) {
-        const recentData = allocationArray.slice(0, 7).map((item: any) => ({
-          employee: item.employeeName || item.userName || item.areaName || 'N/A',
-          asset: item.assetName || item.asset || 'N/A',
-          serial: item.serialNumber || item.assetCode || item.rfidTag || 'N/A',
-          date: item.allocationDate ? new Date(item.allocationDate).toLocaleDateString() : 
-                item.date ? new Date(item.date).toLocaleDateString() : 'N/A',
-          status: item.status === 'Active' || item.status === 'Allocated' ? '🟢' : '🟠'
-        }));
+        const recentData = allocationArray.slice(0, 7).map((item: any) => {
+          const serialData = serialMap.get(item.assetTaggingId) || { serialNo: 'N/A', rfidNo: 'N/A' };
+          return {
+            employee: item.areaTypeName || item.areaName || item.employeeName || item.userName || 'N/A',
+            asset: item.assetName || item.asset || 'N/A',
+            serial: serialData.serialNo,
+            date: item.allocationDate ? new Date(item.allocationDate).toLocaleDateString() : 
+                  item.date ? new Date(item.date).toLocaleDateString() : 'N/A'
+          };
+        });
         setRecentAllocations(recentData);
       }
 
@@ -312,7 +334,7 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* Activity and Alerts Row */}
+      Activity and Alerts Row
       <div className="activity-row">
         <div className="activity-card">
           <h3>Recent Activity</h3>
@@ -347,11 +369,10 @@ function Dashboard() {
         <table className="allocations-table">
           <thead>
             <tr>
-              <th>Employee/Area</th>
+              <th>Area</th>
               <th>Asset</th>
               <th>Serial Number</th>
               <th>Date</th>
-              <th>Status</th>
             </tr>
           </thead>
           <tbody>
@@ -362,7 +383,6 @@ function Dashboard() {
                   <td>{allocation.asset}</td>
                   <td>{allocation.serial}</td>
                   <td>{allocation.date}</td>
-                  <td>{allocation.status}</td>
                 </tr>
               ))
             ) : (
