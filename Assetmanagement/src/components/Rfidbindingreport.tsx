@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import './Assetallocation.css';
-import { getAssetAllocationList, getAssetTaggingList, getAreaTypeList } from '../api/endpoint';
+import { getAssetTaggingList, getAreaTypeList } from '../api/endpoint';
 
-interface AllocationReport {
+interface RfidbindingReport {
+  rfidBindingId: number;
+  rfidBindingDate?: string;
   assetAllocationId: number;
   assetName: string;
   areaTypeName: string;
@@ -20,15 +22,15 @@ interface Area {
   areaTypeName: string;
 }
 
-function Assetallocationreport() {
-  const [allocations, setAllocations] = useState<AllocationReport[]>([]);
+function Rfidbindingreport() {
+  const [allocations, setAllocations] = useState<RfidbindingReport[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
-  const [selectedArea, setSelectedArea] = useState('');
+  const [selectedArea] = useState('');
   const [selectedAsset, setSelectedAsset] = useState('');
-  const [areas, setAreas] = useState<Area[]>([]);
+  const [, setAreas] = useState<Area[]>([]);
   const [showDownloadMenu, setShowDownloadMenu] = useState(false);
 
   useEffect(() => {
@@ -57,69 +59,57 @@ function Assetallocationreport() {
   const fetchAllocationData = async () => {
     try {
       setLoading(true);
-      const response = await getAssetAllocationList();
-      console.log('Asset Allocation List Response:', response);
-      
+
+      // Use Asset Tagging list (RFID bindings) as primary source for this report
+      const response = await getAssetTaggingList();
+      console.log('Asset Tagging List Response:', response);
+
       let data = [];
       if (Array.isArray(response)) {
         data = response;
       } else if (response?.data && Array.isArray(response.data)) {
         data = response.data;
       }
-      
-      console.log('Allocation Data:', data);
-      
-      // Fetch RFID Asset Tagging data for serial numbers
-      const rfidResponse = await getAssetTaggingList();
-      console.log('RFID Tagging Response:', rfidResponse);
-      let rfidArray = [];
-      if (Array.isArray(rfidResponse)) {
-        rfidArray = rfidResponse;
-      } else if (rfidResponse?.data && Array.isArray(rfidResponse.data)) {
-        rfidArray = rfidResponse.data;
-      }
-      
-      // Create a map of assetTaggingId to serial number and RFID data
-      const serialMap = new Map();
-      rfidArray.forEach((item: any) => {
-        serialMap.set(item.assetTaggingId, {
-          serialNo: item.serialNo || 'N/A',
-          rfidNo: item.rfidNo || 'N/A'
-        });
-      });
-      
-      // Merge the data
-      const mergedData = data.map((allocation: any) => {
-        const serialData = serialMap.get(allocation.assetTaggingId) || { serialNo: 'N/A', rfidNo: 'N/A' };
+
+      console.log('RFID Tagging Data:', data);
+
+      // Map tagging records to report shape, normalizing possible date fields
+      const mapped = data.map((item: any) => {
+        const dateField = item.rfidBindingDate || item.bindingDate || item.taggingDate || item.createdDate || item.createdOn || item.date || item.timestamp || null;
         return {
-          ...allocation,
-          serialNo: serialData.serialNo,
-          rfidNo: serialData.rfidNo,
-          areaTypeName: allocation.areaTypeName || allocation.areaName || 'N/A',
-          areaTypeId: allocation.areaTypeId || allocation.areaId
-        };
+          rfidBindingId: item.assetTaggingId || item.rfidBindingId || 0,
+          rfidBindingDate: dateField ? new Date(dateField).toISOString() : undefined,
+          assetAllocationId: item.assetAllocationId || item.allocationId || 0,
+          assetName: item.assetName || item.asset || 'N/A',
+          areaTypeName: item.areaTypeName || item.areaName || 'N/A',
+          areaTypeId: item.areaTypeId || item.areaId,
+          allocationDate: item.allocationDate || item.date || undefined,
+          serialNo: item.serialNo || item.serialNumber || 'N/A',
+          rfidNo: item.rfidNo || item.rfidTag || 'N/A',
+          status: item.status
+        } as RfidbindingReport;
       });
-      
-      console.log('Merged Allocation Data:', mergedData);
-      setAllocations(mergedData);
+
+      setAllocations(mapped);
     } catch (err: any) {
-      console.error('Failed to fetch allocation data:', err);
-      setError('Failed to load allocation report');
+      console.error('Failed to fetch RFID binding data:', err);
+      setError('Failed to load RFID binding report');
     } finally {
       setLoading(false);
     }
   };
 
   const filteredAllocations = allocations.filter((allocation) => {
-    // Filter by date range
-    if (fromDate && allocation.allocationDate) {
-      const allocationDate = new Date(allocation.allocationDate);
+    // Filter by date range (use rfidBindingDate if available)
+    const dateStr = allocation.rfidBindingDate || allocation.allocationDate || '';
+    if (fromDate && dateStr) {
+      const allocationDate = new Date(dateStr);
       const filterFromDate = new Date(fromDate);
       if (allocationDate < filterFromDate) return false;
     }
-    
-    if (toDate && allocation.allocationDate) {
-      const allocationDate = new Date(allocation.allocationDate);
+
+    if (toDate && dateStr) {
+      const allocationDate = new Date(dateStr);
       const filterToDate = new Date(toDate);
       filterToDate.setHours(23, 59, 59, 999); // End of day
       if (allocationDate > filterToDate) return false;
@@ -149,15 +139,14 @@ function Assetallocationreport() {
 
   const downloadExcel = () => {
     // Create CSV content
-    const headers = ['S.No', 'Asset Name', 'Area Name', 'Allocation Date', 'Serial Number', 'RFID Number'];
+    const headers = ['S.No', 'Asset Name', 'RFID Binding Date', 'Serial Number', 'RFID Number'];
     const csvRows = [headers.join(',')];
     
     filteredAllocations.forEach((allocation, index) => {
       const row = [
         index + 1,
         allocation.assetName || 'N/A',
-        allocation.areaTypeName || 'N/A',
-        formatDate(allocation.allocationDate),
+        formatDate(allocation.rfidBindingDate || allocation.allocationDate),
         allocation.serialNo || 'N/A',
         allocation.rfidNo || 'N/A'
       ];
@@ -207,9 +196,9 @@ function Assetallocationreport() {
             <tr>
               <th>S.No</th>
               <th>Asset Name</th>
-              <th>Area Name</th>
-              <th>Allocation Date</th>
+              <th>RFID Binding Date</th>
               <th>Serial Number</th>
+              <th>RFID Number</th>
             </tr>
           </thead>
           <tbody>
@@ -217,9 +206,9 @@ function Assetallocationreport() {
               <tr>
                 <td>${index + 1}</td>
                 <td>${allocation.assetName || 'N/A'}</td>
-                <td>${allocation.areaTypeName || 'N/A'}</td>
-                <td>${formatDate(allocation.allocationDate)}</td>
+                <td>${formatDate(allocation.rfidBindingDate || allocation.allocationDate)}</td>
                 <td>${allocation.serialNo || 'N/A'}</td>
+                <td>${allocation.rfidNo || 'N/A'}</td>
               </tr>
             `).join('')}
           </tbody>
@@ -279,22 +268,6 @@ function Assetallocationreport() {
               onChange={(e) => setToDate(e.target.value)}
               className="form-control"
             />
-          </div>
-          
-          <div className="form-group">
-            <label>Area</label>
-            <select
-              value={selectedArea}
-              onChange={(e) => setSelectedArea(e.target.value)}
-              className="form-control"
-            >
-              <option value="">All Areas</option>
-              {areas.map((area) => (
-                <option key={area.areaTypeId} value={area.areaTypeId}>
-                  {area.areaTypeName}
-                </option>
-              ))}
-            </select>
           </div>
           
           <div className="form-group">
@@ -390,26 +363,26 @@ function Assetallocationreport() {
               <tr>
                 <th>S.No</th>
                 <th>Asset Name</th>
-                <th>Area Name</th>
-                <th>Allocation Date</th>
+                <th>RFID Binding Date</th>
                 <th>Serial Number</th>
+                <th>RFID Number</th>
               </tr>
             </thead>
             <tbody>
               {filteredAllocations.length > 0 ? (
                 filteredAllocations.map((allocation, index) => (
-                  <tr key={allocation.assetAllocationId || index}>
+                  <tr key={allocation.rfidBindingId || index}>
                     <td>{index + 1}</td>
                     <td>{allocation.assetName || 'N/A'}</td>
-                    <td>{allocation.areaTypeName || 'N/A'}</td>
-                    <td>{formatDate(allocation.allocationDate)}</td>
+                    <td>{formatDate(allocation.rfidBindingDate || '')}</td>
                     <td>{allocation.serialNo || 'N/A'}</td>
+                    <td>{allocation.rfidNo || 'N/A'}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} style={{ textAlign: 'center', padding: '20px' }}>
-                    No allocations found
+                  <td colSpan={5} style={{ textAlign: 'center', padding: '20px' }}>
+                    No RFID bindings found
                   </td>
                 </tr>
               )}
@@ -425,4 +398,4 @@ function Assetallocationreport() {
   );
 }
 
-export default Assetallocationreport;
+export default Rfidbindingreport;

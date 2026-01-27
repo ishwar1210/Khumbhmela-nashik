@@ -17,6 +17,10 @@ import Assettype from './components/Assettype'
 import Vendortype from './components/Vendortype'
 import RFIDbinding from './components/RFIDbinding'
 import Assetallocation from './components/Assetallocation'
+import Assetallocationreport from './components/Assetallocationreport'
+import Rfidbindingreport from './components/Rfidbindingreport'
+import Distributionreport from './components/Distributionreport'
+import Deploymentreport from './components/Deploymentreport'
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false)
@@ -55,6 +59,15 @@ function App() {
         return <RFIDbinding />
       case 'assetallocation':
         return <Assetallocation />
+      case 'allocationreport':
+        return <Assetallocationreport />
+      case 'rfidbindingreport':
+        return <Rfidbindingreport />
+      case 'distributionreport':
+        return <Distributionreport />
+      case 'deploymentreport':
+        return <Deploymentreport />
+      
     }
   }
 

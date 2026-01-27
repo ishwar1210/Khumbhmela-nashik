@@ -246,7 +246,16 @@ function Sidebar({ onNavigate, currentPage }: SidebarProps) {
             </div>
             <ul className={`submenu ${openDropdown === 'report' ? 'open' : ''}`}>
               <li className="submenu-item">
-                <a href="#" className="submenu-link" onClick={(e) => { e.preventDefault(); handleNavigate('allocationreport'); }}>Allocation Report</a>
+                <a href="#" className="submenu-link" onClick={(e) => { e.preventDefault(); handleNavigate('allocationreport'); }}>Asset Allocation Report</a>
+              </li>
+              <li className="submenu-item">
+                <a href="#" className="submenu-link" onClick={(e) => { e.preventDefault(); handleNavigate('rfidbindingreport'); }}>RFID Binding Report</a>
+              </li>
+              <li className="submenu-item">
+                <a href="#" className="submenu-link" onClick={(e) => { e.preventDefault(); handleNavigate('distributionreport'); }}>Distribution Report</a>
+              </li>
+              <li className="submenu-item">
+                <a href="#" className="submenu-link" onClick={(e) => { e.preventDefault(); handleNavigate('deploymentreport'); }}>Deployment Report</a>
               </li>
             </ul>
           </li>
