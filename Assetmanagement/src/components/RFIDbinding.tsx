@@ -506,7 +506,7 @@ function RFIDbinding() {
   return (
     <div className="rfid-binding-container">
       <div className="rfid-binding-header">
-        <h1>RFID Binding</h1>
+        <h1>Asset Registration</h1>
       </div>
 
       {error && <div className="alert alert-error">{error}</div>}

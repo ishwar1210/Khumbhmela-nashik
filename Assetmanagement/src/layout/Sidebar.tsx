@@ -217,7 +217,7 @@ function Sidebar({ onNavigate, currentPage }: SidebarProps) {
             </div>
             <ul className={`submenu ${openDropdown === 'rfid' ? 'open' : ''}`}>
               <li className="submenu-item">
-                <a href="#" className="submenu-link" onClick={(e) => { e.preventDefault(); handleNavigate('rfidbinding'); }}>RFID Binding</a>
+                <a href="#" className="submenu-link" onClick={(e) => { e.preventDefault(); handleNavigate('rfidbinding'); }}>Asset Registration</a>
               </li>
             </ul>
           </li>
@@ -249,7 +249,7 @@ function Sidebar({ onNavigate, currentPage }: SidebarProps) {
                 <a href="#" className="submenu-link" onClick={(e) => { e.preventDefault(); handleNavigate('allocationreport'); }}>Asset Allocation Report</a>
               </li>
               <li className="submenu-item">
-                <a href="#" className="submenu-link" onClick={(e) => { e.preventDefault(); handleNavigate('rfidbindingreport'); }}>RFID Binding Report</a>
+                <a href="#" className="submenu-link" onClick={(e) => { e.preventDefault(); handleNavigate('rfidbindingreport'); }}>Asset Registration Report</a>
               </li>
               <li className="submenu-item">
                 <a href="#" className="submenu-link" onClick={(e) => { e.preventDefault(); handleNavigate('deploymentreport'); }}>Deployment Report</a>
