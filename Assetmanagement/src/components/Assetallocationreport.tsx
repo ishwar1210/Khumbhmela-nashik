@@ -205,7 +205,7 @@ function Assetallocationreport() {
         <table>
           <thead>
             <tr>
-              <th>S.No</th>
+              <th>Sr.No</th>
               <th>Asset Name</th>
               <th>Area Name</th>
               <th>Allocation Date</th>
@@ -388,7 +388,7 @@ function Assetallocationreport() {
           <table className="allocation-table">
             <thead>
               <tr>
-                <th>S.No</th>
+                <th>Sr.No</th>
                 <th>Asset Name</th>
                 <th>Area Name</th>
                 <th>Allocation Date</th>

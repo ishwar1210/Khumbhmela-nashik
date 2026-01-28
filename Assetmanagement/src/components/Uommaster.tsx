@@ -140,7 +140,7 @@ function Uommaster() {
           <table className="uommaster-table">
             <thead>
               <tr>
-                <th>S.NO</th>
+                <th>Sr.NO</th>
                 <th>UOM Type</th>
                 <th>Actions</th>
               </tr>

@@ -117,7 +117,7 @@ function Category() {
           <table className="category-table">
             <thead>
               <tr>
-                <th>S.No</th>
+                <th>Sr.No</th>
                 <th>Category Name</th>
                 <th>Description</th>
                 <th>Actions</th>

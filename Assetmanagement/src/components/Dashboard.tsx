@@ -253,9 +253,9 @@ function Dashboard() {
         <div className="stat-card">
           <div className="stat-header">
             <div className="stat-info">
-              <h3>Distribution</h3>
+              <h3>Deployment</h3>
               <div className="stat-value">{distributionCount.toLocaleString()}</div>
-              <div className="stat-subvalue">Distributed Assets</div>
+              <div className="stat-subvalue">Deploy Assets</div>
             </div>
             <div className="stat-icon red">
               <Wrench size={24} />

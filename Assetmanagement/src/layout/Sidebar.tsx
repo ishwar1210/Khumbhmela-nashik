@@ -189,7 +189,7 @@ function Sidebar({ onNavigate, currentPage }: SidebarProps) {
                 <a href="#" className="submenu-link" onClick={(e) => { e.preventDefault(); handleNavigate('vendormaster'); }}>Add Vendor</a>
               </li>
               <li className="submenu-item">
-                <a href="#" className="submenu-link" onClick={(e) => { e.preventDefault(); handleNavigate('grn'); }}>Goods Received Note(GRN)</a>
+                <a href="#" className="submenu-link" onClick={(e) => { e.preventDefault(); handleNavigate('grn'); }}>Good Receipt Note (GRN)</a>
               </li>
             </ul>
           </li>
@@ -250,9 +250,6 @@ function Sidebar({ onNavigate, currentPage }: SidebarProps) {
               </li>
               <li className="submenu-item">
                 <a href="#" className="submenu-link" onClick={(e) => { e.preventDefault(); handleNavigate('rfidbindingreport'); }}>RFID Binding Report</a>
-              </li>
-              <li className="submenu-item">
-                <a href="#" className="submenu-link" onClick={(e) => { e.preventDefault(); handleNavigate('distributionreport'); }}>Distribution Report</a>
               </li>
               <li className="submenu-item">
                 <a href="#" className="submenu-link" onClick={(e) => { e.preventDefault(); handleNavigate('deploymentreport'); }}>Deployment Report</a>

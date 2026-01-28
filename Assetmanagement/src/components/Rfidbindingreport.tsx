@@ -361,7 +361,7 @@ function Rfidbindingreport() {
           <table className="allocation-table">
             <thead>
               <tr>
-                <th>S.No</th>
+                <th>Sr.No</th>
                 <th>Asset Name</th>
                 <th>RFID Binding Date</th>
                 <th>Serial Number</th>

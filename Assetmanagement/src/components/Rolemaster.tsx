@@ -115,7 +115,7 @@ function Rolemaster() {
           <table className="role-table">
             <thead>
               <tr>
-                <th>S.No</th>
+                <th>Sr.No</th>
                 <th>Role Name</th>
                 <th>Actions</th>
               </tr>
@@ -139,7 +139,7 @@ function Rolemaster() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={5} className="no-data">No roles found</td>
+                  <td colSpan={3} className="no-data">No roles found</td>
                 </tr>
               )}
             </tbody>

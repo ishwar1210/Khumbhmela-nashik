@@ -168,7 +168,7 @@ function Usermaster() {
           <table className="user-table">
             <thead>
               <tr>
-                <th>S.No</th>
+                <th>Sr.No</th>
                 <th>Full Name</th>
                 <th>Username</th>
                 <th>Role</th>

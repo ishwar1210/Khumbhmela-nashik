@@ -260,7 +260,7 @@ function Assetmaster() {
           <table className="assetmaster-table">
             <thead>
               <tr>
-                <th>S.NO</th>
+                <th>Sr.NO</th>
                 <th>Asset Name</th>
                 <th>Category</th>
                 <th>Asset Type</th>

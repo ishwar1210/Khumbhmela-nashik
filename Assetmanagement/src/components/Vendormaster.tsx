@@ -214,7 +214,7 @@ function Vendormaster() {
           <table className="vendormaster-table">
             <thead>
               <tr>
-                <th>S.NO</th>
+                <th>Sr.NO</th>
                 <th>Vendor Name</th>
                 <th>GST No</th>
                 <th>Contact Person</th>

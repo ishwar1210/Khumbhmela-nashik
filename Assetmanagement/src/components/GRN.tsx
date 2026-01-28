@@ -414,7 +414,7 @@ function GRN() {
   return (
     <div className="grn-container">
       <div className="grn-header">
-        <h1>Goods Received Note (GRN)</h1>
+        <h1>Good Receipt Note (GRN)</h1>
         <button className="btn-add" onClick={() => handleOpenModal()}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -433,7 +433,7 @@ function GRN() {
           <table className="grn-table">
             <thead>
               <tr>
-                <th>S.NO</th>
+                <th>Sr.NO</th>
                 <th>GRN Number</th>
                 <th>Invoice Number</th>
                 <th>Invoice Date</th>

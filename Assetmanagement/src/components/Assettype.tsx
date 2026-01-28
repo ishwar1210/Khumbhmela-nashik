@@ -116,7 +116,7 @@ function Assettype() {
           <table className="assettype-table">
             <thead>
               <tr>
-                <th>S.NO</th>
+                <th>Sr.NO</th>
                 <th>Asset Type Name</th>
                 <th>Description</th>
                 <th>Actions</th>
