@@ -67,6 +67,7 @@ interface UnitOfMeasure {
 }
 
 function GRN() {
+  const [refreshKey, setRefreshKey] = useState(0);
   const [grns, setGrns] = useState<GRN[]>([]);
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [users, setUsers] = useState<User[]>([]);
@@ -309,27 +310,35 @@ function GRN() {
         lineItems: currentGRN.lineItems,
       };
 
+      let success = false;
+      let message = '';
       if (editMode) {
         const updateData = { ...grnData, grnId: currentGRN.grnId };
         const response = await updateGRN(updateData);
         if (response.status) {
-          setSuccessMessage('GRN updated successfully!');
-          await fetchGRNs();
+          message = 'GRN updated successfully!';
+          success = true;
         } else {
           setError(response.message || 'Failed to update GRN');
         }
       } else {
         const response = await addGRN(grnData);
         if (response.status) {
-          setSuccessMessage('GRN added successfully!');
-          await fetchGRNs();
+          message = 'GRN added successfully!';
+          success = true;
         } else {
           setError(response.message || 'Failed to add GRN');
         }
       }
-      setTimeout(() => {
-        handleCloseModal();
-      }, 1500);
+      if (success) {
+        await fetchGRNs();
+        setSuccessMessage(message);
+        setTimeout(() => {
+          setSuccessMessage('');
+          handleCloseModal();
+          setRefreshKey(prev => prev + 1);
+        }, 1200);
+      }
     } catch (err: any) {
       setError(err.response?.data?.message || 'An error occurred');
     } finally {
@@ -412,7 +421,7 @@ function GRN() {
   };
 
   return (
-    <div className="grn-container">
+    <div className="grn-container" key={refreshKey}>
       <div className="grn-header">
         <h1>Good Receipt Note (GRN)</h1>
         <button className="btn-add" onClick={() => handleOpenModal()}>

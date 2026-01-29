@@ -4,17 +4,22 @@
 
 import { useState, useEffect } from 'react';
 import './Assetallocation.css';
-import { getAssetDistributionList } from '../api/endpoint';
+import { getDistributedAssetsByArea } from '../api/endpoint';
 
 interface DistributionReport {
-  assetDistributionId: number;
+  assetId: number;
+  assetReconciliationId: number;
   assetName: string;
-  areaTypeName: string;
-  areaTypeId?: number;
-  distributionDate: string;
-  serialNo?: string;
-  rfidNo?: string;
-  status?: number;
+  assetType: string;
+  categoryId: number;
+  categoryName: string;
+  areaId: number;
+  areaName: string;
+  serialNumber: string;
+  rfidNo: string;
+  qrCode: string;
+  assetStatus: string;
+  distributionDate?: string; // fallback if present
 }
 
 interface Area {
@@ -40,7 +45,8 @@ function Deploymentreport() {
   const fetchDistributionData = async () => {
     try {
       setLoading(true);
-      const response = await getAssetDistributionList();
+      // areaId: 0 means all areas
+      const response = await getDistributedAssetsByArea(0);
       let data = [];
       if (Array.isArray(response)) {
         data = response;
@@ -51,8 +57,8 @@ function Deploymentreport() {
       // Extract unique areas
       const areaMap = new Map();
       data.forEach((item: any) => {
-        if (item.areaTypeId && item.areaTypeName) {
-          areaMap.set(item.areaTypeId, item.areaTypeName);
+        if (item.areaId && item.areaName) {
+          areaMap.set(item.areaId, item.areaName);
         }
       });
       setAreas(Array.from(areaMap, ([areaTypeId, areaTypeName]) => ({ areaTypeId, areaTypeName })));
@@ -64,21 +70,22 @@ function Deploymentreport() {
   };
 
   const filteredDistributions = distributions.filter((distribution) => {
-    // Filter by date range
-    if (fromDate && distribution.distributionDate) {
-      const distributionDate = new Date(distribution.distributionDate);
+    // Filter by date range (if distributionDate is present)
+    const dateStr = distribution.distributionDate || '';
+    if (fromDate && dateStr) {
+      const distributionDate = new Date(dateStr);
       const filterFromDate = new Date(fromDate);
       if (distributionDate < filterFromDate) return false;
     }
-    if (toDate && distribution.distributionDate) {
-      const distributionDate = new Date(distribution.distributionDate);
+    if (toDate && dateStr) {
+      const distributionDate = new Date(dateStr);
       const filterToDate = new Date(toDate);
       filterToDate.setHours(23, 59, 59, 999);
       if (distributionDate > filterToDate) return false;
     }
     // Filter by area
-    if (selectedArea && distribution.areaTypeId) {
-      if (distribution.areaTypeId.toString() !== selectedArea) return false;
+    if (selectedArea && distribution.areaId) {
+      if (distribution.areaId.toString() !== selectedArea) return false;
     }
     // Filter by asset
     if (selectedAsset && distribution.assetName) {
@@ -97,16 +104,15 @@ function Deploymentreport() {
   };
 
   const downloadExcel = () => {
-    const headers = ['S.No', 'Asset Name', 'Area Name', 'Distribution Date', 'Serial Number', 'RFID Number'];
+    const headers = ['S.No', 'Asset Name', 'Area Name', 'Distribution Date', 'Serial Number'];
     const csvRows = [headers.join(',')];
     filteredDistributions.forEach((distribution, index) => {
       const row = [
         index + 1,
         distribution.assetName || 'N/A',
-        distribution.areaTypeName || 'N/A',
-        formatDate(distribution.distributionDate),
-        distribution.serialNo || 'N/A',
-        distribution.rfidNo || 'N/A'
+        distribution.areaName || 'N/A',
+        formatDate(distribution.distributionDate || ''),
+        distribution.serialNumber || 'N/A'
       ];
       csvRows.push(row.join(','));
     });
@@ -152,7 +158,7 @@ function Deploymentreport() {
               <th>Sr.No</th>
               <th>Asset Name</th>
               <th>Area Name</th>
-              <th>Deploy Date</th>
+              <th>Distribution Date</th>
               <th>Serial Number</th>
             </tr>
           </thead>
@@ -161,9 +167,9 @@ function Deploymentreport() {
               <tr>
                 <td>${index + 1}</td>
                 <td>${distribution.assetName || 'N/A'}</td>
-                <td>${distribution.areaTypeName || 'N/A'}</td>
-                <td>${formatDate(distribution.distributionDate)}</td>
-                <td>${distribution.serialNo || 'N/A'}</td>
+                <td>${distribution.areaName || 'N/A'}</td>
+                <td>${formatDate(distribution.distributionDate || '')}</td>
+                <td>${distribution.serialNumber || 'N/A'}</td>
               </tr>
             `).join('')}
           </tbody>
@@ -326,24 +332,24 @@ function Deploymentreport() {
                 <th>Sr.No</th>
                 <th>Asset Name</th>
                 <th>Area Name</th>
-                <th>Deploy Date</th>
+                <th>Distribution Date</th>
                 <th>Serial Number</th>
               </tr>
             </thead>
             <tbody>
               {filteredDistributions.length > 0 ? (
                 filteredDistributions.map((distribution, index) => (
-                  <tr key={distribution.assetDistributionId || index}>
+                  <tr key={distribution.assetReconciliationId || index}>
                     <td>{index + 1}</td>
                     <td>{distribution.assetName || 'N/A'}</td>
-                    <td>{distribution.areaTypeName || 'N/A'}</td>
-                    <td>{formatDate(distribution.distributionDate)}</td>
-                    <td>{distribution.serialNo || 'N/A'}</td>
+                    <td>{distribution.areaName || 'N/A'}</td>
+                    <td>{formatDate(distribution.distributionDate || '')}</td>
+                    <td>{distribution.serialNumber || 'N/A'}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} style={{ textAlign: 'center', padding: '20px' }}>
+                  <td colSpan={5} style={{ textAlign: 'center', padding: '20px' }}>
                     No distributions found
                   </td>
                 </tr>

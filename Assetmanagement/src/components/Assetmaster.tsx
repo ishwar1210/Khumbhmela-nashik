@@ -30,6 +30,7 @@ interface UnitOfMeasure {
 }
 
 function Assetmaster() {
+  const [refreshTable, setRefreshTable] = useState(false);
   const [assets, setAssets] = useState<Asset[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [assetTypes, setAssetTypes] = useState<AssetType[]>([]);
@@ -194,27 +195,35 @@ function Assetmaster() {
         assetSerialNo: currentAsset.assetSerialNo,
       };
 
+      let success = false;
+      let message = '';
       if (editMode) {
         const updateData = { ...assetData, assetId: currentAsset.assetId };
         const response = await updateAsset(updateData);
         if (response.status) {
-          setSuccessMessage('Asset updated successfully!');
-          await fetchAssets();
+          message = 'Asset updated successfully!';
+          success = true;
         } else {
           setError(response.message || 'Failed to update asset');
         }
       } else {
         const response = await addAsset(assetData);
         if (response.status) {
-          setSuccessMessage('Asset added successfully!');
-          await fetchAssets();
+          message = 'Asset added successfully!';
+          success = true;
         } else {
           setError(response.message || 'Failed to add asset');
         }
       }
-      setTimeout(() => {
-        handleCloseModal();
-      }, 1500);
+      if (success) {
+        await fetchAssets();
+        setSuccessMessage(message);
+        setTimeout(() => {
+          setSuccessMessage('');
+          handleCloseModal();
+          setRefreshTable(prev => !prev);
+        }, 1200);
+      }
     } catch (err: any) {
       setError(err.response?.data?.message || 'An error occurred');
     } finally {
@@ -225,7 +234,7 @@ function Assetmaster() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
 
-    if (name === 'categoryId' || name === 'assetTypeId ') {
+    if (name === 'categoryId' || name === 'assetTypeId') {
       setCurrentAsset({
         ...currentAsset,
         [name]: Number(value),
@@ -239,7 +248,7 @@ function Assetmaster() {
   };
 
   return (
-    <div className="assetmaster-container">
+    <div className="assetmaster-container" key={refreshTable ? 'refresh1' : 'refresh0'}>
       <div className="assetmaster-header">
         <h1>Asset Master</h1>
         <button className="btn-add" onClick={() => handleOpenModal()}>
@@ -261,8 +270,8 @@ function Assetmaster() {
             <thead>
               <tr>
                 <th>Sr.NO</th>
-                <th>Asset Name</th>
                 <th>Category</th>
+                <th>Asset Name</th>
                 <th>Asset Type</th>
                 <th>Unit</th>
                 <th>Actions</th>
@@ -279,8 +288,8 @@ function Assetmaster() {
                 assets.map((asset, index) => (
                   <tr key={asset.assetId}>
                     <td data-label="S.NO">{index + 1}</td>
-                    <td data-label="Asset Name">{asset.assetName}</td>
                     <td data-label="Category">{getCategoryName(asset.categoryId)}</td>
+                    <td data-label="Asset Name">{asset.assetName}</td>
                     <td data-label="Asset Type">{getAssetTypeName(asset.assetTypeId)}</td>
                     <td data-label="Unit">{asset.unitOfMeasure || 'N/A'}</td>
                     <td data-label="Actions">

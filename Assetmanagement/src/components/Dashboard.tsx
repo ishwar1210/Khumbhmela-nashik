@@ -1,5 +1,5 @@
 import './Dashboard.css';
-import { TrendingUp, Package, Wrench, AlertTriangle } from 'lucide-react';
+import { TrendingUp, Package, Wrench } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, LineChart, Line
@@ -273,7 +273,7 @@ function Dashboard() {
 
       {/* Charts Row */}
       <div className="charts-row">
-        <div className="chart-card">
+        <div className="chart-card chart-card-wide">
           <h3>Stock Levels by Category</h3>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={stockData}>
@@ -319,8 +319,11 @@ function Dashboard() {
             </div>
           </div>
         </div>
+      </div>
 
-        <div className="chart-card">
+      {/* Monthly Utilization Rate Row */}
+      <div className="charts-row">
+        <div className="chart-card chart-card-full">
           <h3>Monthly Utilization Rate</h3>
           <ResponsiveContainer width="100%" height={200}>
             <LineChart data={utilizationData}>
@@ -332,11 +335,9 @@ function Dashboard() {
             </LineChart>
           </ResponsiveContainer>
         </div>
-      </div>
 
-      Activity and Alerts Row
-      <div className="activity-row">
-        <div className="activity-card">
+        {/* Activity and Alerts Row */}
+         <div className="activity-card">
           <h3>Recent Activity</h3>
           <div className="activity-list">
             <div className="activity-item">
@@ -346,21 +347,10 @@ function Dashboard() {
             <div className="activity-item">
               <span className="activity-dot green"></span>
               <span className="activity-text">Server Rack Upgrade Complete</span>
-              <span className="activity-date">233848-19-23-15</span>
             </div>
           </div>
-        </div>
+      </div>
 
-        <div className="alert-card">
-          <h3>Critical Alerts</h3>
-          <div className="alert-content">
-            <AlertTriangle className="alert-icon" size={20} />
-            <div>
-              <div className="alert-title">Low Stock Keyboards, Qty 20</div>
-              <div className="alert-subtitle">Projectors in Auditorium</div>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Recent Allocations Table */}

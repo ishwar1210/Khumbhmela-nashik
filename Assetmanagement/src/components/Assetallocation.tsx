@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import './Assetallocation.css';
-import { getAssetTaggingList, getAreaTypeList, addAssetAllocation } from '../api/endpoint';
+import { getAssetTaggingList, getAreaTypeList, addAssetAllocation, getAssetAllocationList } from '../api/endpoint';
 
 
 interface Area {
@@ -73,34 +73,45 @@ function Assetallocation() {
 
   const fetchRFIDAssets = async () => {
     try {
+      // Fetch all allocations
+      const allocationResponse = await getAssetAllocationList();
+      let allocatedData = [];
+      if (Array.isArray(allocationResponse)) {
+        allocatedData = allocationResponse;
+      } else if (allocationResponse?.data && Array.isArray(allocationResponse.data)) {
+        allocatedData = allocationResponse.data;
+      }
+      // Get all allocated assetTaggingIds
+      const allocatedTaggingIds = new Set(allocatedData.map((item: any) => item.assetTaggingId));
+
+      // Fetch all RFID assets
       const response = await getAssetTaggingList();
       console.log('AssetTaggingList API Response:', response);
-      
       let data = [];
       if (Array.isArray(response)) {
         data = response;
       } else if (response.data && Array.isArray(response.data)) {
         data = response.data;
       }
-      
       console.log('Extracted data:', data);
-      
-      // Map all assets (no filtering for now - show all)
-      const availableAssets = data.map((asset: any) => ({
-        ...asset,
-        selected: false
-      }));
-      
-      console.log('Available assets after filtering:', availableAssets);
-      
+
+      // Filter out assets that are already allocated
+      const unallocatedAssets = data.filter((asset: any) => !allocatedTaggingIds.has(asset.assetTaggingId))
+        .map((asset: any) => ({
+          ...asset,
+          selected: false
+        }));
+
+      // Log all unique assetStatus values for debugging
+      const allStatuses = Array.from(new Set(data.map((asset: any) => asset.assetStatus)));
+      console.log('All unique assetStatus values:', allStatuses);
+
       // Extract unique asset names for dropdown
-      const uniqueAssetNames = Array.from(new Set(availableAssets.map((asset: any) => asset.assetName))) as string[];
-      
-      console.log('Unique asset names:', uniqueAssetNames);
-      
+      const uniqueAssetNames = Array.from(new Set(unallocatedAssets.map((asset: any) => asset.assetName))) as string[];
+
       setAssetNames(uniqueAssetNames);
-      setRfidAssets(availableAssets);
-      setFilteredAssets(availableAssets);
+      setRfidAssets(unallocatedAssets);
+      setFilteredAssets(unallocatedAssets);
     } catch (err: any) {
       console.error('Failed to fetch RFID assets:', err);
     }

@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './Reconciliation.css';
+import { getAssetList, getAreaTypeList } from '../api/endpoint';
 
 interface ReconciliationItem {
   assetReconciliationId: number;
@@ -27,13 +28,42 @@ const Reconciliation: React.FC = () => {
   const [toDate, setToDate] = useState('');
   const [area, setArea] = useState('');
   const [asset, setAsset] = useState('');
+  const [assetMap, setAssetMap] = useState<{ [id: number]: string }>({});
+  const [areaList, setAreaList] = useState<{ areaTypeId: number, areaTypeName: string }[]>([]);
+  const [assetList, setAssetList] = useState<{ assetId: number, assetName: string }[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Fetch reconciliation data
         const response = await axios.get('http://192.168.1.101:7878/api/AssetReconciliation/GetReconciliationList');
         setData(response.data);
         setFiltered(response.data);
+
+        // Fetch asset list and build assetId to assetName map
+        const assetResponse = await getAssetList();
+        let assetArray = [];
+        if (Array.isArray(assetResponse)) {
+          assetArray = assetResponse;
+        } else if (assetResponse?.data && Array.isArray(assetResponse.data)) {
+          assetArray = assetResponse.data;
+        }
+        setAssetList(assetArray);
+        const map: { [id: number]: string } = {};
+        assetArray.forEach((a: any) => {
+          map[a.assetId] = a.assetName;
+        });
+        setAssetMap(map);
+
+        // Fetch area list
+        const areaResponse = await getAreaTypeList();
+        let areaArray = [];
+        if (Array.isArray(areaResponse)) {
+          areaArray = areaResponse;
+        } else if (areaResponse?.data && Array.isArray(areaResponse.data)) {
+          areaArray = areaResponse.data;
+        }
+        setAreaList(areaArray);
       } catch (err: any) {
         setError('Failed to fetch data');
       } finally {
@@ -43,9 +73,7 @@ const Reconciliation: React.FC = () => {
     fetchData();
   }, []);
 
-  // Get unique area and asset names for dropdowns
-  const areaOptions = Array.from(new Set(data.map(d => d.areaName)));
-  const assetOptions = Array.from(new Set(data.map(d => d.qrCode)));
+  // Use areaList and assetList for dropdowns
 
   // Filter handler
   useEffect(() => {
@@ -57,10 +85,10 @@ const Reconciliation: React.FC = () => {
       filteredData = filteredData.filter(d => new Date(d.reconciliationDate) <= new Date(toDate));
     }
     if (area && area !== 'All Areas') {
-      filteredData = filteredData.filter(d => d.areaName === area);
+      filteredData = filteredData.filter(d => d.areaId === Number(area));
     }
     if (asset && asset !== 'All Assets') {
-      filteredData = filteredData.filter(d => d.qrCode === asset);
+      filteredData = filteredData.filter(d => d.assetId === Number(asset));
     }
     setFiltered(filteredData);
   }, [fromDate, toDate, area, asset, data]);
@@ -97,9 +125,10 @@ const Reconciliation: React.FC = () => {
               value={area}
               onChange={e => setArea(e.target.value)}
             >
-              <option>All Areas</option>
-              {areaOptions.map(a => (
-                <option key={a} value={a}>{a}</option>
+              <option value="">All Areas</option>
+              {areaList.length === 0 && <option value="N/A">N/A</option>}
+              {areaList.map(a => (
+                <option key={a.areaTypeId} value={a.areaTypeId}>{a.areaTypeName || 'N/A'}</option>
               ))}
             </select>
           </div>
@@ -110,9 +139,10 @@ const Reconciliation: React.FC = () => {
               value={asset}
               onChange={e => setAsset(e.target.value)}
             >
-              <option>All Assets</option>
-              {assetOptions.map(a => (
-                <option key={a} value={a}>{a}</option>
+              <option value="">All Assets</option>
+              {assetList.length === 0 && <option value="N/A">N/A</option>}
+              {assetList.map(a => (
+                <option key={a.assetId} value={a.assetId}>{a.assetName || 'N/A'}</option>
               ))}
             </select>
           </div>
@@ -139,12 +169,12 @@ const Reconciliation: React.FC = () => {
                 {filtered.map((item, idx) => (
                   <tr key={item.assetReconciliationId}>
                     <td>{idx + 1}</td>
-                    <td>{item.qrCode}</td>
-                    <td>{item.areaName}</td>
-                    <td>{item.rfidNo}</td>
-                    <td>{item.reconciliationDate}</td>
-                    <td>{item.assetCondition}</td>
-                    <td>{item.status}</td>
+                    <td>{assetMap[item.assetId] || 'N/A'}</td>
+                    <td>{item.areaName || 'N/A'}</td>
+                    <td>{item.rfidNo || 'N/A'}</td>
+                    <td>{item.reconciliationDate ? item.reconciliationDate : 'N/A'}</td>
+                    <td>{item.assetCondition || 'N/A'}</td>
+                    <td>{item.status || 'N/A'}</td>
                   </tr>
                 ))}
               </tbody>

@@ -36,6 +36,7 @@ function Vendormaster() {
   });
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+    const [refreshTable, setRefreshTable] = useState(false);
 
   useEffect(() => {
     fetchVendors();
@@ -147,27 +148,35 @@ function Vendormaster() {
         status: currentVendor.status,
       };
 
+      let success = false;
+      let message = '';
       if (editMode) {
         const updateData = { ...vendorData, vendorId: currentVendor.vendorId };
         const response = await updateVendor(updateData);
         if (response.status) {
-          setSuccessMessage('Vendor updated successfully!');
-          await fetchVendors();
+          message = 'Vendor updated successfully!';
+          success = true;
         } else {
           setError(response.message || 'Failed to update vendor');
         }
       } else {
         const response = await addVendor(vendorData);
         if (response.status) {
-          setSuccessMessage('Vendor added successfully!');
-          await fetchVendors();
+          message = 'Vendor added successfully!';
+          success = true;
         } else {
           setError(response.message || 'Failed to add vendor');
         }
       }
-      setTimeout(() => {
-        handleCloseModal();
-      }, 1500);
+      if (success) {
+        setSuccessMessage(message);
+        setTimeout(async () => {
+          setSuccessMessage('');
+          handleCloseModal();
+          await fetchVendors();
+          setRefreshTable(prev => !prev);
+        }, 1200);
+      }
     } catch (err: any) {
       setError(err.response?.data?.message || 'An error occurred');
     } finally {
@@ -193,7 +202,7 @@ function Vendormaster() {
   };
 
   return (
-    <div className="vendormaster-container">
+    <div className="vendormaster-container" key={refreshTable ? 'refresh1' : 'refresh0'}>
       <div className="vendormaster-header">
         <h1>Vendor Master</h1>
         <button className="btn-add" onClick={() => handleOpenModal()}>

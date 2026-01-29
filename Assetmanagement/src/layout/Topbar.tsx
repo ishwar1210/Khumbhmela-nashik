@@ -15,7 +15,7 @@ function Topbar({ onLogout }: TopbarProps) {
   return (
     <div className="topbar">
       <div className="topbar-left">
-        <h1 className="topbar-title">Asset Management</h1>
+        <h1 className="topbar-title">Asset Management System</h1>
       </div>
       <div className="topbar-right">
         <button className="logout-button" onClick={handleLogout}>
