@@ -20,6 +20,7 @@ import Assetallocation from './components/Assetallocation'
 import Assetallocationreport from './components/Assetallocationreport'
 import Rfidbindingreport from './components/Rfidbindingreport'
 import Deploymentreport from './components/Deploymentreport'
+import Reconciliation from './components/Reconciliation'
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false)
@@ -64,6 +65,8 @@ function App() {
         return <Rfidbindingreport />
       case 'deploymentreport':
         return <Deploymentreport />
+      case 'reconciliation':
+        return <Reconciliation />
       
     }
   }

@@ -31,8 +31,8 @@ function Assetallocation() {
   const [assetType, setAssetType] = useState('');
   const [selectedArea, setSelectedArea] = useState('');
 
-  const [rfidSearch, setRfidSearch] = useState('');
-  const [rfidMatch, setRfidMatch] = useState<RFIDAsset | null>(null);
+  const [rfidSearch] = useState('');
+  const [, setRfidMatch] = useState<RFIDAsset | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -201,41 +201,6 @@ function Assetallocation() {
 
   return (
     <div className="asset-allocation-container">
-      {/* RFID Search Section */}
-      <div className="form-section" style={{ marginBottom: 24 }}>
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="rfidSearch">Search by RFID No</label>
-            <input
-              id="rfidSearch"
-              type="text"
-              value={rfidSearch}
-              onChange={e => setRfidSearch(e.target.value)}
-              className="form-control"
-              placeholder="Enter RFID No"
-              style={{ maxWidth: 300 }}
-            />
-          </div>
-        </div>
-        {rfidSearch && (
-          <div style={{ marginTop: 12, fontSize: 15 }}>
-            {rfidMatch ? (
-              <div style={{ color: '#059669', background: '#f0fdf4', padding: 12, borderRadius: 6 }}>
-                <div><b>RFID No:</b> {rfidMatch.rfidNo}</div>
-                <div><b>Serial No:</b> {rfidMatch.serialNo}</div>
-                <div><b>Area:</b> {(() => {
-                  const area = areas.find(a => a.areaTypeId === rfidMatch.assetId);
-                  return area ? area.areaTypeName : 'N/A';
-                })()}</div>
-              </div>
-            ) : (
-              <div style={{ color: '#dc2626', background: '#fef2f2', padding: 12, borderRadius: 6 }}>
-                No matching RFID found.
-              </div>
-            )}
-          </div>
-        )}
-      </div>
       <div className="asset-allocation-header">
         <h1>Assign RFID Assets to Area</h1>
       </div>

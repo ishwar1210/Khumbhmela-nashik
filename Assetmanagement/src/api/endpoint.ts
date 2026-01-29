@@ -1,3 +1,12 @@
+// Get Distributed Assets By Area
+export const getDistributedAssetsByArea = async (areaId: number) => {
+  try {
+    const response = await axiosInstance.post('/AssetReconciliation/GetDistributedAssetsByArea', { areaId });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 import axiosInstance from './axiosInstance';
 
 // Login API

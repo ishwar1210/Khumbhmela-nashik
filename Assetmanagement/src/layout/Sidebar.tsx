@@ -252,6 +252,9 @@ function Sidebar({ onNavigate, currentPage }: SidebarProps) {
                 <a href="#" className="submenu-link" onClick={(e) => { e.preventDefault(); handleNavigate('rfidbindingreport'); }}>Asset Registration Report</a>
               </li>
               <li className="submenu-item">
+                <a href="#" className="submenu-link" onClick={(e) => { e.preventDefault(); handleNavigate('reconciliation'); }}>Reconciliation Report</a>
+              </li>
+              <li className="submenu-item">
                 <a href="#" className="submenu-link" onClick={(e) => { e.preventDefault(); handleNavigate('deploymentreport'); }}>Deployment Report</a>
               </li>
             </ul>
