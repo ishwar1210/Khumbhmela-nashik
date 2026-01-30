@@ -1,11 +1,10 @@
 
 
 import { useState } from 'react';
-import backgroundImg from '../assets/imgi_3_kumbh-mela-feasts-festivities-discuss.jpg.jpeg';
+import backgroundImg from '../assets/imgi_3_kumbh-mela-feasts-festivities-discuss.jpeg';
 import logoImg from '../assets/MahaKumbh 2025 Vector illustration Design Download For Free.jpg';
 import { loginUser } from '../api/endpoint';
 import './Login.css';
-
 type LoginProps = {
   onLogin?: () => void;
 }

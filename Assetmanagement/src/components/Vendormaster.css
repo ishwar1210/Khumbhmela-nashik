@@ -1,11 +1,12 @@
+/* ===== Base Styles ===== */
 .vendormaster-container {
   padding: 30px;
   max-width: 100%;
   margin: 0 auto;
-  overflow-x: hidden;
   box-sizing: border-box;
 }
 
+/* ===== Header Styles ===== */
 .vendormaster-header {
   display: flex;
   justify-content: space-between;
@@ -16,12 +17,13 @@
 }
 
 .vendormaster-header h1 {
-  font-size: 28px;
+  font-size: clamp(20px, 4vw, 28px);
   font-weight: 700;
   color: #1a1a1a;
   margin: 0;
 }
 
+/* ===== Button Styles ===== */
 .btn-add {
   display: flex;
   align-items: center;
@@ -36,6 +38,7 @@
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+  white-space: nowrap;
 }
 
 .btn-add:hover {
@@ -43,22 +46,30 @@
   box-shadow: 0 6px 16px rgba(255, 107, 53, 0.4);
 }
 
+.btn-add:active {
+  transform: translateY(0);
+}
+
 .btn-add svg {
   width: 20px;
   height: 20px;
+  flex-shrink: 0;
 }
 
+/* ===== Table Container ===== */
 .table-container {
   background: white;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  overflow-x: hidden;
+  width: 100%;
 }
 
+/* ===== Table Styles - Desktop ===== */
 .vendormaster-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: auto;
 }
 
 .vendormaster-table thead {
@@ -66,15 +77,14 @@
 }
 
 .vendormaster-table th {
-  padding: 18px 20px;
+  padding: 18px 16px;
   text-align: left;
   font-weight: 600;
   font-size: 14px;
   color: white;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  white-space: normal;
-  word-wrap: break-word;
+  white-space: nowrap;
 }
 
 .vendormaster-table tbody tr {
@@ -91,12 +101,12 @@
 }
 
 .vendormaster-table td {
-  padding: 16px 20px;
+  padding: 16px;
   color: #4a4a4a;
   font-size: 14px;
-  white-space: normal;
   word-wrap: break-word;
-  max-width: 150px;
+  max-width: 200px;
+  overflow-wrap: break-word;
 }
 
 .vendormaster-table td:first-child {
@@ -104,6 +114,7 @@
   color: #FF6B35;
 }
 
+/* ===== Status Badge ===== */
 .status-badge {
   display: inline-block;
   padding: 6px 16px;
@@ -112,6 +123,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 .status-badge.active {
@@ -126,6 +138,7 @@
   box-shadow: 0 2px 8px rgba(241, 70, 104, 0.3);
 }
 
+/* ===== Action Buttons ===== */
 .btn-edit {
   padding: 8px 12px;
   background: linear-gradient(135deg, #FF6B35 0%, #ff8561 100%);
@@ -145,11 +158,16 @@
   box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
 }
 
+.btn-edit:active {
+  transform: translateY(0);
+}
+
 .btn-edit svg {
   width: 16px;
   height: 16px;
 }
 
+/* ===== Loading & Error States ===== */
 .loading-spinner {
   text-align: center;
   padding: 60px 20px;
@@ -169,7 +187,7 @@
   font-weight: 500;
 }
 
-/* Modal Styles */
+/* ===== Modal Styles ===== */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -180,9 +198,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 900;
+  z-index: 1000;
   padding: 20px;
   backdrop-filter: blur(4px);
+  overflow-y: auto;
 }
 
 .modal-content {
@@ -194,6 +213,7 @@
   overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   animation: modalSlideIn 0.3s ease-out;
+  margin: auto;
 }
 
 @keyframes modalSlideIn {
@@ -219,7 +239,7 @@
 
 .modal-header h2 {
   margin: 0;
-  font-size: 22px;
+  font-size: clamp(18px, 3vw, 22px);
   font-weight: 700;
   color: white;
 }
@@ -236,6 +256,7 @@
   justify-content: center;
   transition: all 0.3s ease;
   color: white;
+  flex-shrink: 0;
 }
 
 .btn-close:hover {
@@ -243,6 +264,11 @@
   transform: rotate(90deg);
 }
 
+.btn-close:active {
+  transform: rotate(90deg) scale(0.95);
+}
+
+/* ===== Form Styles ===== */
 .modal-content form {
   padding: 30px;
 }
@@ -324,6 +350,7 @@
   margin: 0;
 }
 
+/* ===== Alert Messages ===== */
 .alert {
   padding: 15px 20px;
   border-radius: 12px;
@@ -356,6 +383,7 @@
   box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
 }
 
+/* ===== Modal Footer ===== */
 .modal-footer {
   display: flex;
   justify-content: flex-end;
@@ -377,9 +405,13 @@
   transition: all 0.3s ease;
 }
 
-.btn-cancel:hover {
+.btn-cancel:hover:not(:disabled) {
   background: #e0e0e0;
   transform: translateY(-2px);
+}
+
+.btn-cancel:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .btn-submit {
@@ -400,6 +432,10 @@
   box-shadow: 0 6px 16px rgba(255, 107, 53, 0.4);
 }
 
+.btn-submit:active:not(:disabled) {
+  transform: translateY(0);
+}
+
 .btn-submit:disabled,
 .btn-cancel:disabled {
   opacity: 0.6;
@@ -407,59 +443,123 @@
   transform: none;
 }
 
-/* Responsive Design */
-@media (max-width: 1200px) {
+/* ===== Scrollbar Styling ===== */
+.table-container::-webkit-scrollbar,
+.modal-content::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.table-container::-webkit-scrollbar-track,
+.modal-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.table-container::-webkit-scrollbar-thumb,
+.modal-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #FF6B35 0%, #ff8561 100%);
+  border-radius: 10px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover,
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #e85a25 0%, #ff7651 100%);
+}
+
+/* ===== Loading Animation ===== */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-spinner::after {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-left: 10px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #FF6B35;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  vertical-align: middle;
+}
+
+/* ===== RESPONSIVE BREAKPOINTS ===== */
+
+/* Large Desktops (1200px and up) - Default styles apply */
+
+/* Medium Desktops and Tablets (992px to 1199px) */
+@media (max-width: 1199px) {
   .vendormaster-container {
     padding: 25px;
   }
-}
 
-@media (max-width: 992px) {
-  .vendormaster-container {
-    padding: 20px;
-  }
-
-  .vendormaster-header h1 {
-    font-size: 24px;
+  .vendormaster-table th,
+  .vendormaster-table td {
+    padding: 14px 12px;
+    font-size: 13px;
   }
 
   .modal-content {
     max-width: 700px;
   }
+}
+
+/* Tablets (768px to 991px) */
+@media (max-width: 991px) {
+  .vendormaster-container {
+    padding: 20px;
+  }
+
+  .vendormaster-header {
+    gap: 12px;
+  }
 
   .form-row {
     grid-template-columns: 1fr;
     gap: 0;
+    margin-bottom: 0;
+  }
+
+  .modal-content {
+    max-width: 90%;
+  }
+
+  .modal-header {
+    padding: 20px 25px;
+  }
+
+  .modal-content form {
+    padding: 25px;
   }
 }
 
-@media (max-width: 768px) {
+/* Mobile Landscape and Small Tablets (576px to 767px) */
+@media (max-width: 767px) {
   .vendormaster-container {
     padding: 15px;
   }
 
   .vendormaster-header {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
-  }
-
-  .vendormaster-header h1 {
-    font-size: 22px;
+    align-items: stretch;
+    gap: 12px;
   }
 
   .btn-add {
     width: 100%;
     justify-content: center;
-    padding: 14px 24px;
-    font-size: 14px;
+    padding: 14px 20px;
   }
 
+  /* Mobile Card Layout for Table */
   .table-container {
     border-radius: 12px;
+    overflow-x: auto;
   }
 
-  /* Responsive Table - Card Layout */
   .vendormaster-table {
     border: 0;
   }
@@ -481,29 +581,33 @@
   .vendormaster-table tbody tr:hover {
     background: #fff8f6;
     box-shadow: 0 4px 12px rgba(255, 107, 53, 0.1);
+    transform: translateY(-2px);
   }
 
   .vendormaster-table td {
-    display: block;
-    text-align: right;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: 10px 0;
     border-bottom: 1px solid #f5f5f5;
-    white-space: normal;
-    word-wrap: break-word;
+    text-align: right;
+    max-width: 100%;
   }
 
   .vendormaster-table td:last-child {
     border-bottom: 0;
+    padding-bottom: 0;
   }
 
   .vendormaster-table td::before {
     content: attr(data-label);
-    float: left;
     font-weight: 600;
     color: #FF6B35;
     text-transform: uppercase;
     font-size: 11px;
     letter-spacing: 0.5px;
+    text-align: left;
+    flex: 0 0 40%;
   }
 
   .vendormaster-table td:first-child {
@@ -517,30 +621,32 @@
 
   .vendormaster-table td:first-child::before {
     content: "S.NO: ";
+    font-size: 11px;
+    font-weight: 600;
   }
 
-  .status-badge {
-    float: right;
-  }
-
-  .btn-edit {
-    float: right;
+  /* Modal Responsive */
+  .modal-overlay {
+    padding: 15px;
+    align-items: flex-start;
+    padding-top: 20px;
   }
 
   .modal-content {
     max-width: 100%;
-    max-height: 95vh;
+    max-height: calc(100vh - 40px);
     border-radius: 16px;
-    margin: 10px;
+    margin: 0;
   }
 
   .modal-header {
-    padding: 20px;
+    padding: 18px 20px;
     border-radius: 16px 16px 0 0;
   }
 
-  .modal-header h2 {
-    font-size: 20px;
+  .btn-close {
+    width: 34px;
+    height: 34px;
   }
 
   .modal-content form {
@@ -551,13 +657,10 @@
     margin-bottom: 20px;
   }
 
-  .form-row {
-    margin-bottom: 0;
-  }
-
   .modal-footer {
-    flex-direction: column;
+    flex-direction: column-reverse;
     gap: 10px;
+    margin-top: 25px;
   }
 
   .btn-cancel,
@@ -567,22 +670,19 @@
   }
 }
 
-@media (max-width: 576px) {
+/* Mobile Portrait (480px to 575px) */
+@media (max-width: 575px) {
   .vendormaster-container {
-    padding: 10px;
+    padding: 12px;
   }
 
   .vendormaster-header {
     margin-bottom: 20px;
   }
 
-  .vendormaster-header h1 {
-    font-size: 20px;
-  }
-
   .btn-add {
-    font-size: 13px;
-    padding: 12px 20px;
+    font-size: 14px;
+    padding: 12px 18px;
   }
 
   .btn-add svg {
@@ -592,27 +692,25 @@
 
   .table-container {
     border-radius: 10px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   }
 
-  .vendormaster-table th,
-  .vendormaster-table td {
-    padding: 10px 12px;
-    font-size: 12px;
+  .vendormaster-table tbody tr {
+    padding: 12px;
+    margin-bottom: 12px;
   }
 
   .status-badge {
-    padding: 4px 12px;
+    padding: 5px 14px;
     font-size: 11px;
   }
 
   .btn-edit {
-    padding: 6px 10px;
+    padding: 7px 11px;
   }
 
   .btn-edit svg {
-    width: 14px;
-    height: 14px;
+    width: 15px;
+    height: 15px;
   }
 
   .modal-overlay {
@@ -620,16 +718,12 @@
   }
 
   .modal-content {
-    border-radius: 12px;
+    border-radius: 14px;
   }
 
   .modal-header {
-    padding: 15px;
-    border-radius: 12px 12px 0 0;
-  }
-
-  .modal-header h2 {
-    font-size: 18px;
+    padding: 16px 18px;
+    border-radius: 14px 14px 0 0;
   }
 
   .btn-close {
@@ -638,7 +732,7 @@
   }
 
   .modal-content form {
-    padding: 15px;
+    padding: 18px;
   }
 
   .form-group {
@@ -653,8 +747,8 @@
   .form-group input,
   .form-group textarea,
   .form-group select {
-    padding: 10px 14px;
-    font-size: 13px;
+    padding: 11px 14px;
+    font-size: 14px;
   }
 
   .form-group-checkbox {
@@ -670,11 +764,7 @@
     font-size: 13px;
   }
 
-  .alert {
-    padding: 12px 16px;
-    font-size: 13px;
-  }
-
+  .alert,
   .error-message {
     padding: 12px 16px;
     font-size: 13px;
@@ -687,79 +777,158 @@
 
   .btn-cancel,
   .btn-submit {
-    padding: 12px 20px;
+    padding: 13px 22px;
     font-size: 14px;
   }
 }
 
-@media (max-width: 400px) {
-  .vendormaster-header h1 {
-    font-size: 18px;
+/* Extra Small Mobile (320px to 479px) */
+@media (max-width: 479px) {
+  .vendormaster-container {
+    padding: 10px;
   }
 
-  .modal-header h2 {
-    font-size: 16px;
+  .btn-add {
+    font-size: 13px;
+    padding: 11px 16px;
+  }
+
+  .vendormaster-table tbody tr {
+    padding: 10px;
+  }
+
+  .vendormaster-table td {
+    padding: 8px 0;
+    font-size: 13px;
+  }
+
+  .vendormaster-table td::before {
+    font-size: 10px;
+  }
+
+  .modal-content {
+    border-radius: 12px;
+  }
+
+  .modal-header {
+    padding: 14px 16px;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .btn-close {
+    width: 30px;
+    height: 30px;
+  }
+
+  .modal-content form {
+    padding: 16px;
   }
 
   .form-group input,
   .form-group textarea,
   .form-group select {
-    font-size: 12px;
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .btn-cancel,
+  .btn-submit {
+    padding: 12px 20px;
+    font-size: 13px;
   }
 }
 
-/* Scrollbar Styling */
-.table-container::-webkit-scrollbar {
-  height: 8px;
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .btn-add,
+  .btn-edit,
+  .btn-close,
+  .btn-cancel,
+  .btn-submit {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    min-height: 44px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  .form-group-checkbox input[type="checkbox"] {
+    min-width: 24px;
+    min-height: 24px;
+  }
 }
 
-.table-container::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
+/* Landscape Orientation */
+@media (max-width: 767px) and (orientation: landscape) {
+  .modal-overlay {
+    padding: 10px;
+  }
+
+  .modal-content {
+    max-height: calc(100vh - 20px);
+  }
+
+  .modal-header {
+    padding: 14px 20px;
+  }
+
+  .modal-content form {
+    padding: 16px 20px;
+  }
+
+  .form-group {
+    margin-bottom: 14px;
+  }
+
+  .form-row {
+    gap: 0;
+    margin-bottom: 0;
+  }
 }
 
-.table-container::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #FF6B35 0%, #ff8561 100%);
-  border-radius: 10px;
+/* High DPI Displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .vendormaster-table th,
+  .vendormaster-table td {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 }
 
-.table-container::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #e85a25 0%, #ff7651 100%);
+/* Reduced Motion Preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
-.modal-content::-webkit-scrollbar {
-  width: 8px;
+/* Dark Mode Support (Optional) */
+@media (prefers-color-scheme: dark) {
+  /* Add dark mode styles if needed */
 }
 
-.modal-content::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
-}
+/* Print Styles */
+@media print {
+  .btn-add,
+  .btn-edit,
+  .modal-overlay {
+    display: none !important;
+  }
 
-.modal-content::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #FF6B35 0%, #ff8561 100%);
-  border-radius: 10px;
-}
+  .vendormaster-container {
+    padding: 0;
+  }
 
-.modal-content::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #e85a25 0%, #ff7651 100%);
-}
-
-/* Loading Animation */
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.loading-spinner::after {
-  content: "";
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  margin-left: 10px;
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid #FF6B35;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  vertical-align: middle;
+  .table-container {
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
 }

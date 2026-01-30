@@ -1,5 +1,3 @@
-
-
 import { useState, useEffect } from 'react';
 import './Vendormaster.css';
 import { getVendorList, addVendor, updateVendor, getVendorTypeList } from '../api/endpoint';
@@ -16,8 +14,6 @@ interface Vendor {
   address: string;
   status: boolean;
 }
-
-
 
 function Vendormaster() {
   const [vendors, setVendors] = useState<Vendor[]>([]);
@@ -36,12 +32,24 @@ function Vendormaster() {
   });
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-    const [refreshTable, setRefreshTable] = useState(false);
+  const [refreshTable, setRefreshTable] = useState(false);
 
   useEffect(() => {
     fetchVendors();
     fetchVendorTypes();
   }, []);
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (showModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [showModal]);
 
   const fetchVendors = async () => {
     setLoading(true);
@@ -49,7 +57,6 @@ function Vendormaster() {
       const response = await getVendorList();
       console.log('Vendor API Response:', response);
       
-      // Handle different response structures
       let data = [];
       if (Array.isArray(response)) {
         data = response;
@@ -74,7 +81,6 @@ function Vendormaster() {
       const response = await getVendorTypeList();
       console.log('Vendor Type API Response (from Vendormaster):', response);
       
-      // Handle different response structures
       let data = [];
       if (Array.isArray(response)) {
         data = response;
@@ -89,7 +95,6 @@ function Vendormaster() {
       console.error('Failed to fetch vendor types:', err);
     }
   };
-
 
   const handleOpenModal = (vendor?: Vendor) => {
     if (vendor) {
@@ -236,7 +241,7 @@ function Vendormaster() {
             <tbody>
               {vendors.length === 0 ? (
                 <tr>
-                  <td colSpan={9} style={{ textAlign: 'center' }}>
+                  <td colSpan={8} style={{ textAlign: 'center' }}>
                     No vendors found
                   </td>
                 </tr>
@@ -259,6 +264,7 @@ function Vendormaster() {
                         className="btn-edit"
                         onClick={() => handleOpenModal(vendor)}
                         title="Edit"
+                        aria-label="Edit vendor"
                       >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -279,7 +285,11 @@ function Vendormaster() {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>{editMode ? 'Edit Vendor' : 'Add New Vendor'}</h2>
-              <button className="btn-close" onClick={handleCloseModal}>
+              <button 
+                className="btn-close" 
+                onClick={handleCloseModal}
+                aria-label="Close modal"
+              >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="18" y1="6" x2="6" y2="18"></line>
                   <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -434,4 +444,4 @@ function Vendormaster() {
   );
 }
 
-export default Vendormaster
+export default Vendormaster;

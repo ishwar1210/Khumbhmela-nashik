@@ -31,12 +31,103 @@ const Reconciliation: React.FC = () => {
   const [assetMap, setAssetMap] = useState<{ [id: number]: string }>({});
   const [areaList, setAreaList] = useState<{ areaTypeId: number, areaTypeName: string }[]>([]);
   const [assetList, setAssetList] = useState<{ assetId: number, assetName: string }[]>([]);
+  const [showDownloadMenu, setShowDownloadMenu] = useState(false);
+  // Download Excel (CSV)
+  const downloadExcel = () => {
+    const headers = ['S.No', 'Asset', 'Area', 'RFID No', 'Date', 'Condition', 'Status'];
+    const csvRows = [headers.join(',')];
+    filtered.forEach((item, idx) => {
+      const row = [
+        idx + 1,
+        assetMap[item.assetId] || 'N/A',
+        item.areaName || 'N/A',
+        item.rfidNo || 'N/A',
+        item.reconciliationDate || 'N/A',
+        item.assetCondition || 'N/A',
+        item.status || 'N/A'
+      ];
+      csvRows.push(row.join(','));
+    });
+    const csvContent = csvRows.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `Reconciliation_Report_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Download PDF (print)
+  const downloadPDF = () => {
+    const printWindow = window.open('', '', 'height=600,width=800');
+    if (!printWindow) return;
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Reconciliation Report</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 20px; }
+          h1 { text-align: center; color: #333; }
+          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+          th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+          th { background-color: #FF7043; color: white; }
+          tr:nth-child(even) { background-color: #f9f9f9; }
+          .report-info { margin-bottom: 20px; }
+        </style>
+      </head>
+      <body>
+        <h1>Reconciliation Report</h1>
+        <div class="report-info">
+          <p><strong>Generated on:</strong> ${new Date().toLocaleDateString('en-IN')} ${new Date().toLocaleTimeString('en-IN')}</p>
+          <p><strong>Total Records:</strong> ${filtered.length}</p>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Sr.No</th>
+              <th>Asset</th>
+              <th>Area</th>
+              <th>RFID No</th>
+              <th>Date</th>
+              <th>Condition</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${filtered.map((item, idx) => `
+              <tr>
+                <td>${idx + 1}</td>
+                <td>${assetMap[item.assetId] || 'N/A'}</td>
+                <td>${item.areaName || 'N/A'}</td>
+                <td>${item.rfidNo || 'N/A'}</td>
+                <td>${item.reconciliationDate || 'N/A'}</td>
+                <td>${item.assetCondition || 'N/A'}</td>
+                <td>${item.status || 'N/A'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </body>
+      </html>
+    `;
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+      printWindow.close();
+    }, 250);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Fetch reconciliation data
-        const response = await axios.get('http://192.168.1.101:7878/api/AssetReconciliation/GetReconciliationList');
+        const response = await axios.get('http://103.182.196.254:7878/api/AssetReconciliation/GetReconciliationList');
         setData(response.data);
         setFiltered(response.data);
 
@@ -99,7 +190,77 @@ const Reconciliation: React.FC = () => {
         <h2>Reconciliation Report</h2>
       </div>
       <div className="reconciliation-content">
-        <div className="filter-section">
+        <div style={{ display: 'flex', alignItems: 'flex-end', marginBottom: 16 }}>
+          <div style={{ flex: 1 }}>
+            {/* Filter section will be here (see below) */}
+          </div>
+          <div style={{ position: 'relative', minWidth: 160, marginLeft: 16 }}>
+            <button
+              onClick={() => setShowDownloadMenu(!showDownloadMenu)}
+              className="btn-primary btn-download"
+              style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+            >
+              <span>Download</span>
+              <span>▼</span>
+            </button>
+            {showDownloadMenu && (
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                right: 0,
+                width: 180,
+                backgroundColor: 'white',
+                border: '1px solid #e5e7eb',
+                borderRadius: '6px',
+                boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                marginTop: '4px',
+                zIndex: 100
+              }}>
+                <button
+                  onClick={() => {
+                    downloadExcel();
+                    setShowDownloadMenu(false);
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '10px 16px',
+                    border: 'none',
+                    background: 'white',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    borderBottom: '1px solid #e5e7eb'
+                  }}
+                  onMouseOver={e => e.currentTarget.style.backgroundColor = '#f3f4f6'}
+                  onMouseOut={e => e.currentTarget.style.backgroundColor = 'white'}
+                >
+                  📊 Excel (CSV)
+                </button>
+                <button
+                  onClick={() => {
+                    downloadPDF();
+                    setShowDownloadMenu(false);
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '10px 16px',
+                    border: 'none',
+                    background: 'white',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    borderRadius: '0 0 6px 6px'
+                  }}
+                  onMouseOver={e => e.currentTarget.style.backgroundColor = '#f3f4f6'}
+                  onMouseOut={e => e.currentTarget.style.backgroundColor = 'white'}
+                >
+                  📄 PDF
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="filter-section" style={{ display: 'flex', flex: 1, gap: 24 }}>
           <div className="filter-group">
             <label>From Date</label>
             <input

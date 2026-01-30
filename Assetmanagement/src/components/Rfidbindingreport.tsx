@@ -245,7 +245,7 @@ function Rfidbindingreport() {
   return (
     <div className="asset-allocation-container">
       <div className="asset-allocation-header">
-        <h1>Asset Allocation Report</h1>
+        <h1>Asset Registration Report</h1>
       </div>
 
       <div className="asset-allocation-content">
